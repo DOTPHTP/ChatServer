@@ -78,6 +78,16 @@ class ThreadPool
                 
                 std::bind(std::forward<F>(func), std::forward<Args>(args)...)
             );
+            std::future<return_type> res = task->get_future();
+            TaskWrapper task_wrapper{[task](){(*task)();}, priority};
+            if(priority > 0){
+                std::lock_guard<std::mutex> lock(queue_mtx);
+                pri_queue.push(std::move(task_wrapper));
+            }else{
+                task_queue.push(std::move(task_wrapper));
+            }
+            condition.notify_one();
+            return res;
         };
 };
 
