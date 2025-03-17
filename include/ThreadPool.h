@@ -24,6 +24,7 @@ class ThreadPool
         };
     std::vector<std::thread> workers;//线程池
     LockFreeQueue<TaskWrapper> task_queue;//任务队列
+    //优先级大于0有效
     std::priority_queue<TaskWrapper> pri_queue;//优先级任务队列
     std::atomic<bool> stop{false};//线程池是否停止
     std::mutex queue_mtx;//优先级任务队列互斥锁
@@ -69,7 +70,7 @@ class ThreadPool
             }
         }
 
-        //提交任务
+        //提交任务，返回值是std::future
         template<typename F, typename... Args>
         auto enqueue(F&& func, int priority, Args&&... args)->std::future<decltype(func(args...))>{
             using return_type = decltype(func(args...));
