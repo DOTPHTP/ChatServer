@@ -76,7 +76,6 @@ class ThreadPool
             using return_type = decltype(func(args...));
            
             auto task = std::make_shared<std::packaged_task<return_type()>>(
-                
                 std::bind(std::forward<F>(func), std::forward<Args>(args)...)
             );
             std::future<return_type> res = task->get_future();
@@ -91,23 +90,6 @@ class ThreadPool
             return res;
         };
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif // THREADPOOL_H
 
